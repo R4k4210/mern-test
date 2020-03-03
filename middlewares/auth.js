@@ -9,6 +9,8 @@ function auth(req, res, next){
 
     try{
         const decode = jwt.verify(token, keys.secretOrKey);
+        console.log("Decode => ", decode.email);
+        req.email = decode.email;
         next();
     }catch(e){
         res.status(400).json({msg: 'Invalid token.'});

@@ -30,9 +30,9 @@ router.post('/login', (req, res) => {
                                 //Create JWT Payload
                                 const payload = {
                                     email: user.email
-                                };
+                                }; 
                                 //Sign token
-                                jwt.sign(payload, 
+                                jwt.sign(payload, //using client as payload
                                         keys.secretOrKey, 
                                         {expiresIn: keys.expirationTime}, 
                                         (err, token) => {
