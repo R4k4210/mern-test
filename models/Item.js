@@ -6,6 +6,10 @@ const ItemSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    user_mail: {
+        type: String,
+        required: true
     }
 });
 
