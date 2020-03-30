@@ -10,3 +10,8 @@
     width: 400px;
     height: auto;
 }
+
+.form-buttons {
+    padding: 0 0.9rem;
+    justify-content: space-between;
+}
