@@ -35,13 +35,26 @@ class Register extends Component{
         if(this.state['password'] !== this.state['repassword']){
             alert("Password must match re-password");
         }else{
-            console.log("State antes de create => ", this.state);
+            //console.log("State antes de create => ", this.state);
             this.props.createUser(this.state);
         }
     }
 
     render(){
         
+        /*
+         *  Tal como se menciona abajo, luego de usar connect y mapStateToProps, se puede acceder al estado
+         *  y siempre que se genere un cambio en este, podremos enterarnos, cada vez que se llame al Action
+         *  de Redux.   
+         *  const { user } = this.props;
+         *  console.log("Mi props => ", this.props);
+         *  La forma de acceder a las propiedades del state se determina segun la forma declarada en el Reducer
+            if(user.user){
+                const u = user.user;
+                console.log(u.name);
+            }
+        */
+
         return(
             <div className="form-container col-lg-12">
                 <form className="form" onSubmit={this.handleSubmit}>
@@ -106,14 +119,33 @@ class Register extends Component{
     }
 }
 
+/*
+    Se usa prototypes para realizar validaciones de los tipos de props.
+    optionalArray: PropTypes.array,
+    optionalBool: PropTypes.bool,
+    optionalFunc: PropTypes.func,
+    optionalNumber: PropTypes.number,
+    optionalObject: PropTypes.object,
+    optionalString: PropTypes.string,
+    optionalSymbol: PropTypes.symbol,
+*/
 Register.propTypes = {
     createUser: PropTypes.func.isRequired
 }
 
+/*  
+    mapStateToProps te vincula tu componente con el state del store, de esta forma
+    cualquier componente que quiera acceder al estado de por ej. el usuario, debe
+    usar esta funcion. Tambien permite al componente suscribirse al state y enterarse de los cambios.
+*/
 const mapStateToProps = (state) => {
     return {
         user: state.user
     }
 };
-
+ 
+/*
+    Connect es quien genera el vinculo del estado con el componente, pasando el mapStateToProps nos sucribimos a los cambios
+    y ante cualquiera actualizacion de valores podremos verlo, de la misma forma pasando null, podemos no suscribirnos.
+*/
 export default connect(mapStateToProps, { createUser })(Register);

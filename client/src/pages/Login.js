@@ -17,7 +17,7 @@ class Login extends Component{
     //Preveemos que se haga un reload de la pagina al hacer submit
     handleSubmit = e => {
         e.preventDefault();
-        console.log(this.state);
+        
     }
 
     render(){
