@@ -26,12 +26,14 @@ const checkEncryptedPassword = function(pass_from_request, stored_password) {
 }
 
 //Encrypt the password and return a User
-const getUserWithEncryptedData = function(pass_from_request, email_from_request){
+const getUserWithEncryptedData = function(body){
     const user_with_encypted_password = new Promise((resolve, reject) => {
-        bcrypt.hash(pass_from_request, salt_rounds, (err, hash) => {
+        bcrypt.hash(body.password, salt_rounds, (err, hash) => {
             if(err) return reject(err);
             const user = new User({
-                email: email_from_request,
+                firstname: body.firstname,
+                lastname: body.lastname,
+                email: body.email,
                 password: hash
             });
             resolve(user);

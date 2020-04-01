@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { signInUser } from '../redux/actions/user/userActions';
+import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -22,10 +25,20 @@ class Login extends Component{
     }
     //Preveemos que se haga un reload de la pagina al hacer submit
     handleSubmit = e => {
-        e.preventDefault();    
+        e.preventDefault();
+        try{
+            this.props.signInUser(this.state.email, this.state.password);
+            this.props.history.push("/dashboard");
+        }catch(err){
+            throw(err);
+        }
     }
 
     render(){
+        const { member } = this.props;
+        if(member.user){
+            console.log("MEMBER +> ", member.user.data);
+        }        
         const { classes } = this.props;
         return(
             <Grid container component="main" className={classes.root}>
@@ -39,7 +52,7 @@ class Login extends Component{
                         <Typography component="h1" variant="h5">
                             Sign in
                         </Typography>
-                        <form className={classes.form} noValidate>
+                        <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
                             <TextField
                                 variant="outlined"
                                 margin="normal"
@@ -101,11 +114,15 @@ class Login extends Component{
         )
     }
 }
-/*
-        <Link href="#" variant="body2">
-                           Forgot password?
-                           </Link>
-                           */
 
-export default withStyles(styles)(Login);
-//export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(ComponentName))
+Login.propTypes = {
+    signInUser: PropTypes.func.isRequired
+}
+
+const mapStateToProps = (state) => {
+    return {
+        member: state.member
+    }
+};
+
+export default connect(mapStateToProps, { signInUser })(withStyles(styles)(Login));
