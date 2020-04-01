@@ -14,11 +14,20 @@ function Reducer(state = {}, action) {
                 user: action.payload
             }
         case LOGIN_USER:
-            break;
+            return {
+                ...state,
+                user: action.payload
+            }
         case LOGOUT_USER:
-            break;
+            return {
+                ...state,
+                user: action.payload
+            }
         case DELETE_USER:
-            break;
+            return {
+                ...state,
+                message: "User has been deleted"
+            }
         default:
             return state;
     }

@@ -8,7 +8,7 @@ import user from './UserReducer';
     de todas formas siendo un arbol de informacion con la estructura que uno le determine.
 */    
 const Reducer = combineReducers({
-    user
+    member: user
 });
 
 export default Reducer;

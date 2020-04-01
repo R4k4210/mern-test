@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './pages/Login';
@@ -12,6 +12,7 @@ const App = () => (
   <Provider store={Store}>
     <BrowserRouter>
       <Switch>
+        <Redirect exact from="/" to="/login"/>
         <Route exact path="/login" component={Login}/>
         <Route exact path="/register" component={Register}/>
         <Route exact path="/dashboard" component={Dashboard}/>
