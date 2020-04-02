@@ -50,14 +50,9 @@ class Register extends Component {
         /*
          *  Tal como se menciona abajo, luego de usar connect y mapStateToProps, se puede acceder al estado
          *  y siempre que se genere un cambio en este, podremos enterarnos, cada vez que se llame al Action
-         *  de Redux.   
-         *  const { user } = this.props;
-         *  console.log("Mi props => ", this.props);
+         *  de Redux.            
          *  La forma de acceder a las propiedades del state se determina segun la forma declarada en el Reducer
-            if(user.user){
-                const u = user.user;
-                console.log(u.name);
-            }
+         *  > this.props.{nombre reducer}.{nombre propiedad}.{demas propiedades}
         */        
         const { classes } = this.props;
 
@@ -206,15 +201,18 @@ Register.propTypes = {
     mapStateToProps te vincula tu componente con el state del store, de esta forma
     cualquier componente que quiera acceder al estado de por ej. el usuario, debe
     usar esta funcion. Tambien permite al componente, al estar suscripto al state, enterarse de los cambios.
+    En este caso no necesitamos que el componente vea el estado actualizado, por lo cual comentamos 
+    mapStateToProps y mandamos null en connect.
+
+    const mapStateToProps = (state) => {
+        return {
+            member: state.member
+        }
+    };
 */
-const mapStateToProps = (state) => {
-    return {
-        member: state.member
-    }
-};
 
 /*
     Connect es quien genera el vinculo del estado con el componente, pasando el mapStateToProps nos sucribimos a los cambios
     y ante cualquiera actualizacion de valores podremos verlo, de la misma forma pasando null, podemos no suscribirnos.
 */
-export default connect(mapStateToProps, { createUser })(withStyles(styles)(Register));
+export default connect(null, { createUser })(withStyles(styles)(Register));

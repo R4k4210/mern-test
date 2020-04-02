@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { signInUser } from '../redux/actions/user/userActions';
+import { signInUser, hideError } from '../redux/actions/user/userActions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -15,9 +15,13 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import styles from '../components/styles/LoginForm';
 import Copyright from '../components/login/Copyright';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+import userReducer from '../redux/reducers/UserReducer';
 
 class Login extends Component{
     state = {};
+
     handleChange = e => {
         this.setState({
             [e.target.name]: e.target.value
@@ -28,19 +32,34 @@ class Login extends Component{
         e.preventDefault();
         try{
             this.props.signInUser(this.state.email, this.state.password);
-            this.props.history.push("/dashboard");
         }catch(err){
             throw(err);
         }
     }
 
+    handleClose = e => {
+        this.props.hideError();
+    }
+
     render(){
-        const { member } = this.props;
-        if(member.user){
-            console.log("MEMBER +> ", member.user.data);
-        }        
+
+        const { errors } = this.props.userReducer;
+        let message = '';
+        if(errors){
+            message = errors.data.message;
+        }
+        
+        const { snackOpen } = this.props.userReducer;
         const { classes } = this.props;
+        
         return(
+
+            <Box>
+                <Snackbar open={snackOpen} autoHideDuration={6000} onClose={this.handleClose}>
+                    <Alert onClose={this.handleClose} severity="error">
+                        {message}
+                    </Alert>
+                </Snackbar>
             <Grid container component="main" className={classes.root}>
                 <CssBaseline />
                 <Grid item xs={false} sm={4} md={7} className={classes.image} />
@@ -111,6 +130,7 @@ class Login extends Component{
                     </div>
                 </Grid>
             </Grid>
+            </Box>
         )
     }
 }
@@ -119,10 +139,10 @@ Login.propTypes = {
     signInUser: PropTypes.func.isRequired
 }
 
-const mapStateToProps = (state) => {
-    return {
-        member: state.member
+function mapStateToProps(state) {
+    return { 
+        userReducer: state.userReducer
     }
-};
+}
 
-export default connect(mapStateToProps, { signInUser })(withStyles(styles)(Login));
+export default connect(mapStateToProps, { signInUser, hideError })(withStyles(styles)(Login));

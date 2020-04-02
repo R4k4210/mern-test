@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import user from './UserReducer';
+import userReducer from './UserReducer';
 
 /*
     Hay varias formas de manejar los reducer a usar en una aplicacion, depende totalmente del desarrollador.
@@ -8,7 +8,7 @@ import user from './UserReducer';
     de todas formas siendo un arbol de informacion con la estructura que uno le determine.
 */    
 const Reducer = combineReducers({
-    member: user
+    userReducer
 });
 
 export default Reducer;

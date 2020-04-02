@@ -27,7 +27,7 @@ app.use('/api/items', items);
 
 // Catch all routes
 app.get('*', (req, res) => {
-    res.send("Hellos world");
+    res.send("Main Page");
 });
 
 const port = process.env.PORT || 5000;
