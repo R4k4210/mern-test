@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createUser, hideError } from '../redux/actions/user/userActions';
-import { formLoading } from '../redux/actions/utils/utilsActions';
+import { formLoading, hasErrors } from '../redux/actions/utils/utilsActions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -45,7 +45,10 @@ class Register extends Component {
         try{
             this.props.createUser(this.state).then(() => {
                 this.props.formLoading(false);
-                this.props.history.push('/login');
+                const { hasErrors } = this.props.utilsReducer;
+                if(!hasErrors){
+                    this.props.history.push('/login');
+                }
             });
         }catch(err){
             throw(err);
@@ -255,4 +258,12 @@ function mapStateToProps(state) {
         utilsReducer: state.utilsReducer
     }
 }
-export default connect(mapStateToProps, { createUser, hideError, formLoading })(withStyles(styles)(Register));
+export default connect(
+    mapStateToProps, 
+    { 
+        createUser, 
+        hideError, 
+        formLoading, 
+        hasErrors 
+    })
+    (withStyles(styles)(Register));

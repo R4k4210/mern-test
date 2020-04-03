@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signInUser, hideError } from '../redux/actions/user/userActions';
-import { formLoading } from '../redux/actions/utils/utilsActions';
+import { formLoading, hasErrors } from '../redux/actions/utils/utilsActions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -34,7 +34,10 @@ class Login extends Component{
         try{
             this.props.signInUser(this.state.email, this.state.password).then(() => {
                 this.props.formLoading(false);
-                this.props.history.push('/dashboard');
+                const { hasErrors } = this.props.utilsReducer;
+                if(!hasErrors){
+                    this.props.history.push('/dashboard');
+                }                
             });
         }catch(err){
             throw(err);
@@ -157,4 +160,12 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, { signInUser, hideError, formLoading })(withStyles(styles)(Login));
+export default connect(
+    mapStateToProps, 
+    { 
+        signInUser, 
+        hideError, 
+        formLoading, 
+        hasErrors 
+    })
+    (withStyles(styles)(Login));

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { api } from '../../../config/keys';
 import { CREATE_USER, LOGIN_USER, LOGOUT_USER, DELETE_USER, USER_ERRORS, HIDE_USER_ERRORS } from './types';
-import { FORM_LOADING } from '../utils/types';
+import { FORM_LOADING, HAS_ERRORS } from '../utils/types';
 
 /*
     Se realizan llamadas asincronicas a la API con axios, para luego
@@ -13,31 +13,52 @@ export const createUser = user => dispatch => {
         type: FORM_LOADING,
         payload: true
     });
-    return axios.post(`${api.user}/register`, user).then(response => 
-        //Llamamos al Reducer
-        dispatch({
-            type: CREATE_USER,
-            payload: response.data 
-        }),
-        error => dispatch({
-            type: USER_ERRORS,
-            payload: error.response
+    return axios.post(`${api.user}/register`, user)
+        .then(response => {
+            dispatch({
+                type: CREATE_USER,
+                payload: response.data 
+            })
+            dispatch({
+                type: HAS_ERRORS,
+                payload: false 
+            })
         })
-    );
+        .catch(error => {
+            dispatch({
+                type: USER_ERRORS,
+                payload: error.response
+            })
+            dispatch({
+                type: HAS_ERRORS,
+                payload: true 
+            })
+        })
 }
 
+
 export const signInUser = (email, password) => dispatch => {
-    return axios.post(`${api.user}/login`, {email, password}).then(response =>
-        //Llamamos al Reducer
-        dispatch({
-            type: LOGIN_USER,
-            payload: response.data
-        }),
-        error => dispatch({
-            type: USER_ERRORS,
-            payload: error.response
+    return axios.post(`${api.user}/login`, {email, password})
+        .then(response => {
+            dispatch({
+                type: LOGIN_USER,
+                payload: response.data
+            })
+            dispatch({
+                type: HAS_ERRORS,
+                payload: false 
+            })
         })
-    );
+        .catch( error => {
+            dispatch({
+                type: USER_ERRORS,
+                payload: error.response
+            })
+            dispatch({
+                type: HAS_ERRORS,
+                payload: true 
+            })
+        });     
 }
 
 /*

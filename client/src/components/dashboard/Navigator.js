@@ -5,7 +5,7 @@ class Navigator extends Component {
     render(){
         return(
             <div>
-                Hello
+                <h1>PUTO EL QUE LEE</h1>
             </div>
         )
     }
