@@ -16,12 +16,19 @@ const bcryptValidation = require('../../common-scripts/security-commons');
 router.post('/login', (req, res) => {
     const { errors, isValid } = validateLoginInput(req.body);
     if (!isValid) {
-        return res.status(422).json(errors);
+        return res.status(422).json({
+            success: false,
+            errors
+        });
     }else{
         User.findOne({email: req.body.email})
             .then(user => {
                 if(!user){
-                    res.status(400).send({success: false, message: 'Email or Username are incorrect.'});
+                    errors.email = "Email or Username are incorrect.";
+                    res.status(400).send({
+                        success: false,
+                        errors
+                    });
                 }else{     
                     bcryptValidation.checkEncryptedPassword(req.body.password, user.password)
                         .then(isMatch => {
@@ -35,11 +42,18 @@ router.post('/login', (req, res) => {
                                         {expiresIn: keys.expirationTime}, 
                                         (err, token) => {
                                             if(err) throw err;
-                                            res.json({ token, user: user });
+                                            res.json({ 
+                                                token, 
+                                                user: user 
+                                            });
                                         });
                             }else{
                                 console.log("False => Password not match.");
-                                res.status(400).json({success: false, message: 'Email or Username are incorrect.'});
+                                errors.email = "Email or Username are incorrect.";
+                                res.status(400).json({
+                                    success: false,
+                                    errors
+                                });
                             }     
 
                         })
@@ -48,7 +62,11 @@ router.post('/login', (req, res) => {
             })
             .catch(err => {
                 console.log(err);
-                res.status(500).json({success: false, message: "Internal Server Error: Connection error, please try again later."})
+                errors.internal = "Internal Server Error: Connection error, please try again later.";
+                res.status(500).json({
+                    success: false,
+                    errors
+                })
             });
     }
     
@@ -61,7 +79,10 @@ router.post('/register', (req, res) => {
     console.log("Register requested => ", req.body);
     const { errors, isValid } = validateRegisterInput(req.body);
     if (!isValid) {
-        return res.status(422).json(errors);
+        return res.status(422).json({
+            success: false, 
+            errors
+        });
     }else{
         //Se encripta la clave del usuario y se devuelve el usuario actualizado
         bcryptValidation.getUserWithEncryptedData(req.body)
@@ -76,9 +97,10 @@ router.post('/register', (req, res) => {
                     })
                     .catch(err => {
                         console.log("Error creating Account => ", err);
+                        errors.dusplicated = `Email -> ${req.body.email} is already in use.`;
                         res.status(422).json({
-                            success: false, 
-                            message: `Email -> ${req.body.email} is already in use.`
+                            success: false,
+                            errors
                         });
                     });
 

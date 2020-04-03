@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { signInUser, hideError } from '../redux/actions/user/userActions';
+import { formLoading } from '../redux/actions/utils/utilsActions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -17,7 +18,7 @@ import styles from '../components/styles/LoginForm';
 import Copyright from '../components/login/Copyright';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import userReducer from '../redux/reducers/UserReducer';
+import Error from '../components/utils/Error';
 
 class Login extends Component{
     state = {};
@@ -31,7 +32,10 @@ class Login extends Component{
     handleSubmit = e => {
         e.preventDefault();
         try{
-            this.props.signInUser(this.state.email, this.state.password);
+            this.props.signInUser(this.state.email, this.state.password).then(() => {
+                this.props.formLoading(false);
+                this.props.history.push('/dashboard');
+            });
         }catch(err){
             throw(err);
         }
@@ -43,93 +47,92 @@ class Login extends Component{
 
     render(){
 
-        const { errors } = this.props.userReducer;
-        let message = '';
-        if(errors){
-            message = errors.data.message;
-        }
-        
+        const { errorMessage } = this.props;
         const { snackOpen } = this.props.userReducer;
         const { classes } = this.props;
+        const { loading } = this.props.utilsReducer;
         
         return(
 
             <Box>
                 <Snackbar open={snackOpen} autoHideDuration={6000} onClose={this.handleClose}>
                     <Alert onClose={this.handleClose} severity="error">
-                        {message}
+                        <Error errorMessage={errorMessage}/>
                     </Alert>
                 </Snackbar>
-            <Grid container component="main" className={classes.root}>
-                <CssBaseline />
-                <Grid item xs={false} sm={4} md={7} className={classes.image} />
-                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                    <div className={classes.paper}>
-                        <Avatar className={classes.avatar}>
-                            <LockOutlinedIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h5">
-                            Sign in
-                        </Typography>
-                        <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="email"
-                                label="Email Address"
-                                name="email"
-                                autoComplete="email"
-                                onChange={this.handleChange}
-                                value={this.state.email || ''}
-                                autoFocus
-                            />
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                id="password"
-                                autoComplete="current-password"
-                                onChange={this.handleChange}
-                                value={this.state.password || ''} 
-                            />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}
-                            >
-                                Sign In
-                            </Button>
-                            <Grid container>
-                                <Grid item xs>
-                                    <Box component="span">
-                                        <Link to="/register">
-                                            Forgot password?
-                                        </Link>                                
-                                    </Box>  
+                <Grid container component="main" className={classes.root}>
+                    <CssBaseline />
+                    <Grid item xs={false} sm={4} md={7} className={classes.image} />
+                    <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                        <div className={classes.paper}>
+                            <Avatar className={classes.avatar}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Typography component="h1" variant="h5">
+                                Sign in
+                            </Typography>
+                            <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="email"
+                                    label="Email Address"
+                                    name="email"
+                                    autoComplete="email"
+                                    onChange={this.handleChange}
+                                    value={this.state.email || ''}
+                                    error = {snackOpen}
+                                    autoFocus
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label="Password"
+                                    type="password"
+                                    id="password"
+                                    autoComplete="current-password"
+                                    onChange={this.handleChange}
+                                    error = {snackOpen}
+                                    value={this.state.password || ''} 
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.submit}
+                                    disabled={loading}
+                                >
+                                    Sign In
+                                </Button>
+                                <Grid container>
+                                    <Grid item xs>
+                                        <Box component="span">
+                                            <Link to="/register" disabled={loading}>
+                                                Forgot password?
+                                            </Link>                                
+                                        </Box>  
+                                        </Grid>
+                                    <Grid item>
+                                        <Box component="span">
+                                            <Link to="/register" disabled={loading}>
+                                                Don't have an account? Sign Up
+                                            </Link>                                
+                                        </Box>                            
                                     </Grid>
-                                <Grid item>
-                                    <Box component="span">
-                                        <Link to="/register">
-                                            Don't have an account? Sign Up
-                                        </Link>                                
-                                    </Box>                            
                                 </Grid>
-                            </Grid>
-                            <Box mt={5}>
-                            <Copyright />
-                            </Box>
-                        </form>
-                    </div>
+                                <Box mt={5}>
+                                <Copyright />
+                                </Box>
+                            </form>
+                        </div>
+                    </Grid>
                 </Grid>
-            </Grid>
             </Box>
         )
     }
@@ -140,9 +143,18 @@ Login.propTypes = {
 }
 
 function mapStateToProps(state) {
+    const { userReducer } = state;
+    const { errors } = userReducer; 
+    let message = {};  
+    if(errors){
+        message = Object.values(errors.data.errors);
+    }
+    
     return { 
-        userReducer: state.userReducer
+        userReducer: state.userReducer,
+        errorMessage: message,
+        utilsReducer: state.utilsReducer
     }
 }
 
-export default connect(mapStateToProps, { signInUser, hideError })(withStyles(styles)(Login));
+export default connect(mapStateToProps, { signInUser, hideError, formLoading })(withStyles(styles)(Login));

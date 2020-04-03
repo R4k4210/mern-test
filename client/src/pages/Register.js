@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { createUser } from '../redux/actions/user/userActions';
+import { createUser, hideError } from '../redux/actions/user/userActions';
+import { formLoading } from '../redux/actions/utils/utilsActions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -15,6 +16,9 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import styles from '../components/styles/LoginForm';
 import Copyright from '../components/login/Copyright';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+import Error from '../components/utils/Error';
 
 class Register extends Component {
     //Se debe inicializar state como un objeto vacio, sino el 
@@ -32,17 +36,24 @@ class Register extends Component {
 
         //Computed Property Name 
         this.setState({
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value            
         });
     }
     //Preveemos que se haga un reload de la pagina al hacer submit
     handleSubmit = e => {
         e.preventDefault();
-        if (this.state['password'] !== this.state['repassword']) {
-            alert("Password must match re-password");
-        } else {
-            this.props.createUser(this.state);
-        }
+        try{
+            this.props.createUser(this.state).then(() => {
+                this.props.formLoading(false);
+                this.props.history.push('/login');
+            });
+        }catch(err){
+            throw(err);
+        }  
+    }
+
+    handleClose = e => {
+        this.props.hideError();
     }
 
     render() {
@@ -54,131 +65,149 @@ class Register extends Component {
          *  La forma de acceder a las propiedades del state se determina segun la forma declarada en el Reducer
          *  > this.props.{nombre reducer}.{nombre propiedad}.{demas propiedades}
         */        
+        const { errorMessage } = this.props;
+        const { snackOpen } = this.props.userReducer;
         const { classes } = this.props;
+        const { errorFields } = this.props
+        const errorFieldNames = Object.values(errorFields);
+        const { loading } = this.props.utilsReducer;
 
         return (
 
-            <Grid container component="main" className={classes.root}>
-                <CssBaseline />
-                <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                    <div className={classes.paper}>
-                        <Avatar className={classes.avatar}>
-                            <LockOutlinedIcon />
-                        </Avatar>
-                        <Box m={2}>
-                        <Typography component="h1" variant="h5">
-                            Create account
-                        </Typography>
-                        </Box>
-                        <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        variant="outlined"
-                                        margin="normal"
-                                        autoComplete="fname"
-                                        name="firstname"                                                                                
-                                        id="firstname"
-                                        label="First Name"
-                                        fullWidth
-                                        required
-                                        autoFocus
-                                        onChange={this.handleChange}
-                                        value={this.state.firstname || ''} 
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        variant="outlined"
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        id="lastname"
-                                        label="Last Name"
-                                        name="lastname"
-                                        autoComplete="lname"
-                                        onChange={this.handleChange}
-                                        value={this.state.lastname || ''} 
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        variant="outlined"
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        id="email"
-                                        label="Email"
-                                        name="email"
-                                        autoComplete="email"                                
-                                        onChange={this.handleChange}
-                                        value={this.state.email || ''}                                
-                                    />                                    
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        variant="outlined"
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        name="password"
-                                        label="Password"
-                                        type="password"
-                                        id="password"
-                                        autoComplete="current-password"
-                                        onChange={this.handleChange}
-                                        value={this.state.password || ''}                                        
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        variant="outlined"
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        name="repassword"
-                                        label="Re-password"
-                                        type="password"
-                                        id="repassword"
-                                        autoComplete="current-password"
-                                        onChange={this.handleChange}
-                                        value={this.state.repassword || ''}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}
-                            >
-                                Sign In
-                            </Button>
-                            <Grid container>
-                                <Grid item xs>
-                                    <Box component="span">
-                                        <Link to="/forgot">
-                                            Forgot password?
-                                        </Link>
-                                    </Box>
-                                </Grid>
-                                <Grid item>
-                                    <Box component="span">
-                                        <Link to="/login">
-                                            Already have an account? Sign In
-                                        </Link>
-                                    </Box>
-                                </Grid>
-                            </Grid>
-                            <Box mt={5}>
-                                <Copyright />
+            <Box>
+                <Snackbar open={snackOpen} autoHideDuration={6000} onClose={this.handleClose}>
+                    <Alert onClose={this.handleClose} severity="error">
+                        <Error errorMessage={errorMessage}/>
+                    </Alert>
+                </Snackbar>
+                <Grid container component="main" className={classes.root}>
+                    <CssBaseline />
+                    <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+                        <div className={classes.paper}>
+                            <Avatar className={classes.avatar}>
+                                <LockOutlinedIcon />
+                            </Avatar>
+                            <Box m={2}>
+                            <Typography component="h1" variant="h5">
+                                Create account
+                            </Typography>
                             </Box>
-                        </form>
-                    </div>
+                            <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            autoComplete="fname"
+                                            name="firstname"                                                                                
+                                            id="firstname"
+                                            label="First Name"
+                                            fullWidth
+                                            required
+                                            autoFocus
+                                            onChange={this.handleChange}
+                                            value={this.state.firstname || ''}
+                                            error={errorFieldNames.includes("firstname")}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            required
+                                            fullWidth
+                                            id="lastname"
+                                            label="Last Name"
+                                            name="lastname"
+                                            autoComplete="lname"
+                                            onChange={this.handleChange}
+                                            value={this.state.lastname || ''}
+                                            error={errorFieldNames.includes("lastname")}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            required
+                                            fullWidth
+                                            id="email"
+                                            label="Email"
+                                            name="email"
+                                            autoComplete="email"                                
+                                            onChange={this.handleChange}
+                                            value={this.state.email || ''}
+                                            error={errorFieldNames.includes("email")}                                
+                                        />                                    
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            required
+                                            fullWidth
+                                            name="password"
+                                            label="Password"
+                                            type="password"
+                                            id="password"
+                                            autoComplete="current-password"
+                                            onChange={this.handleChange}
+                                            value={this.state.password || ''}
+                                            error={errorFieldNames.includes("password")}                                        
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            variant="outlined"
+                                            margin="normal"
+                                            required
+                                            fullWidth
+                                            name="repassword"
+                                            label="Re-password"
+                                            type="password"
+                                            id="repassword"
+                                            autoComplete="current-password"
+                                            onChange={this.handleChange}
+                                            value={this.state.repassword || ''}
+                                            error={errorFieldNames.includes("repassword")}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.submit}
+                                    disabled={loading}
+                                >
+                                    Sign In
+                                </Button>
+                                <Grid container>
+                                    <Grid item xs>
+                                        <Box component="span">
+                                            <Link to="/forgot" disabled={loading}>
+                                                Forgot password?
+                                            </Link>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item>
+                                        <Box component="span">
+                                            <Link to="/login" disabled={loading}>
+                                                Already have an account? Sign In
+                                            </Link>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                                <Box mt={5}>
+                                    <Copyright />
+                                </Box>
+                            </form>
+                        </div>
+                    </Grid>
+                    <Grid item xs={false} sm={4} md={7} className={classes.image} />
                 </Grid>
-                <Grid item xs={false} sm={4} md={7} className={classes.image} />
-            </Grid>
+            </Box>
         )
     }
 }
@@ -201,18 +230,29 @@ Register.propTypes = {
     mapStateToProps te vincula tu componente con el state del store, de esta forma
     cualquier componente que quiera acceder al estado de por ej. el usuario, debe
     usar esta funcion. Tambien permite al componente, al estar suscripto al state, enterarse de los cambios.
-    En este caso no necesitamos que el componente vea el estado actualizado, por lo cual comentamos 
-    mapStateToProps y mandamos null en connect.
-
-    const mapStateToProps = (state) => {
-        return {
-            member: state.member
-        }
-    };
 */
 
 /*
     Connect es quien genera el vinculo del estado con el componente, pasando el mapStateToProps nos sucribimos a los cambios
     y ante cualquiera actualizacion de valores podremos verlo, de la misma forma pasando null, podemos no suscribirnos.
 */
-export default connect(null, { createUser })(withStyles(styles)(Register));
+function mapStateToProps(state) {
+    let keys = {};
+    let message = {};    
+    const { userReducer } = state;
+    if(userReducer){
+        const { errors } = userReducer;  
+        if(errors){
+            message = Object.values(errors.data.errors);
+            keys = Object.keys(errors.data.errors);
+        }
+    }
+
+    return { 
+        userReducer: state.userReducer,
+        errorMessage: message,
+        errorFields: keys,
+        utilsReducer: state.utilsReducer
+    }
+}
+export default connect(mapStateToProps, { createUser, hideError, formLoading })(withStyles(styles)(Register));

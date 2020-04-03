@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { api } from '../../../config/keys';
 import { CREATE_USER, LOGIN_USER, LOGOUT_USER, DELETE_USER, USER_ERRORS, HIDE_USER_ERRORS } from './types';
+import { FORM_LOADING } from '../utils/types';
 
 /*
     Se realizan llamadas asincronicas a la API con axios, para luego
@@ -8,7 +9,11 @@ import { CREATE_USER, LOGIN_USER, LOGOUT_USER, DELETE_USER, USER_ERRORS, HIDE_US
     actualice el State
 */
 export const createUser = user => dispatch => {
-    axios.post(`${api.user}/register`, user).then(response => 
+    dispatch({
+        type: FORM_LOADING,
+        payload: true
+    });
+    return axios.post(`${api.user}/register`, user).then(response => 
         //Llamamos al Reducer
         dispatch({
             type: CREATE_USER,
@@ -22,7 +27,7 @@ export const createUser = user => dispatch => {
 }
 
 export const signInUser = (email, password) => dispatch => {
-    axios.post(`${api.user}/login`, {email, password}).then(response =>
+    return axios.post(`${api.user}/login`, {email, password}).then(response =>
         //Llamamos al Reducer
         dispatch({
             type: LOGIN_USER,
