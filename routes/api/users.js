@@ -9,6 +9,9 @@ const validateRegisterInput = require("../../validation/register");
 const User = require('../../models/User');
 // Bcrypt Validations
 const bcryptValidation = require('../../common-scripts/security-commons');
+const auth = require('../../middlewares/auth');
+const attachCurrentUser = require('../../middlewares/attachCurrentUser');
+const impersonateUser = require('../../middlewares/impersonateUser');
 
 // @route    POST api/users/login
 // @desc     Get user by username and password and return JWT Token
@@ -35,6 +38,7 @@ router.post('/login', (req, res) => {
                             if(isMatch){                               
                                 //Create JWT Payload
                                 const payload = {
+                                    _id: user._id,
                                     email: user.email
                                 }; 
                                 //Sign token
@@ -42,9 +46,18 @@ router.post('/login', (req, res) => {
                                         {expiresIn: keys.expirationTime}, 
                                         (err, token) => {
                                             if(err) throw err;
+                                            //Creo el usuario a devolver sin el password
+                                            //El password nunca debe ir al front end!!
+                                            const userToReturn = new User({
+                                                firstname: user.firstname,
+                                                lastname: user.lastname,
+                                                email: user.email
+                                            });
+                                            //Devuelvo mi jwt token con la info del usuario en 
+                                            //caso de necesitarla
                                             res.json({ 
                                                 token, 
-                                                user: user 
+                                                user: userToReturn 
                                             });
                                         });
                             }else{
@@ -107,5 +120,11 @@ router.post('/register', (req, res) => {
             });
     }
 })
+
+//Login sin validaciones, desde la sesión de un usuario
+router.post('/login-as-user', auth, attachCurrentUser, impersonateUser('ONE_PIECE'), (req, res) => {
+    //No desarrollado aún!!
+})
+
 
 module.exports = router;

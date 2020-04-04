@@ -5,15 +5,24 @@ function auth(req, res, next){
     const token = req.header('x-auth-token');
 
     //Check for token
-    if(!token) res.status(400).json({msg: 'No token, authorization denied.'});
+    let errors = {};
+    if(!token) 
+        errors.noToken = "No token, authorization denied";
+        res.status(400).json({
+            success: false,
+            errors 
+        });
 
     try{
         const decode = jwt.verify(token, keys.secretOrKey);
-        console.log("Decode => ", decode.email);
         req.email = decode.email;
         next();
     }catch(e){
-        res.status(400).json({msg: 'Invalid token.'});
+        errors.invalidToken = "Invalid token";
+        res.status(400).json({
+            success: false,
+            errors
+        });
     }
 }
 

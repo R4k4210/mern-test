@@ -86,19 +86,20 @@ class Register extends Component {
                 <Grid container component="main" className={classes.root}>
                     <CssBaseline />
                     <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                        <div className={classes.paper}>
+                        <div className={classes.paper} >
                             <Avatar className={classes.avatar}>
                                 <LockOutlinedIcon />
                             </Avatar>
-                            <Box m={2}>
-                            <Typography component="h1" variant="h5">
-                                Create account
-                            </Typography>
+                            <Box m={0}>
+                                <Typography component="h1" variant="h5">
+                                    Create account
+                                </Typography>
                             </Box>
                             <form className={classes.form} noValidate onSubmit={this.handleSubmit}>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
+                                    <Grid item xs={12} sm={6} >
+                                        <TextField 
+                                            className={classes.input}
                                             variant="outlined"
                                             margin="normal"
                                             autoComplete="fname"
@@ -115,6 +116,7 @@ class Register extends Component {
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
                                         <TextField
+                                            className={classes.input}
                                             variant="outlined"
                                             margin="normal"
                                             required
@@ -130,6 +132,7 @@ class Register extends Component {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
+                                            className={classes.input}
                                             variant="outlined"
                                             margin="normal"
                                             required
@@ -144,7 +147,8 @@ class Register extends Component {
                                         />                                    
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <TextField
+                                        <TextField  
+                                            className={classes.input}
                                             variant="outlined"
                                             margin="normal"
                                             required
@@ -161,6 +165,7 @@ class Register extends Component {
                                     </Grid>
                                     <Grid item xs={12}>
                                         <TextField
+                                            className={classes.input}
                                             variant="outlined"
                                             margin="normal"
                                             required

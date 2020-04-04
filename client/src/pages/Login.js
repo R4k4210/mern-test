@@ -19,6 +19,7 @@ import Copyright from '../components/login/Copyright';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Error from '../components/utils/Error';
+import { GoogleLogin } from 'react-google-login';
 
 class Login extends Component{
     state = {};
@@ -46,6 +47,10 @@ class Login extends Component{
 
     handleClose = e => {
         this.props.hideError();
+    }
+
+    responseGoogle = response => {
+        console.log(response);
     }
 
     render(){
@@ -113,6 +118,18 @@ class Login extends Component{
                                 >
                                     Sign In
                                 </Button>
+                                <Box>
+                                    <GoogleLogin 
+                                        clientId="1090157284353-qel1iuh2p71fruh4ogbcaqds1121dipn.apps.googleusercontent.com"
+                                        onSuccess={this.responseGoogle}
+                                        onFailure={this.responseGoogle}
+                                        buttonText={'Login with Google'}
+                                        cookiePolicy={'single_host_origin'}
+                                        isSignedIn={true}
+                                        theme={'dark'}
+                                        className={classes.google}
+                                    />
+                                </Box>
                                 <Grid container>
                                     <Grid item xs>
                                         <Box component="span">

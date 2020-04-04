@@ -11,6 +11,7 @@ const styles = theme => ({
       backgroundPosition: 'center',
     },
     paper: {
+      marginTop: theme.spacing(1),
       margin: theme.spacing(8, 4),
       display: 'flex',
       flexDirection: 'column',
@@ -27,6 +28,15 @@ const styles = theme => ({
     submit: {
       margin: theme.spacing(3, 0, 2),
     },
+    input: {
+      marginTop: theme.spacing(0),
+    },
+    google: {
+      width: '100%',
+      marginTop: theme.spacing(0),
+      marginBottom: theme.spacing(2),
+      align: 'center',
+    }
 });
 
 export default styles;
