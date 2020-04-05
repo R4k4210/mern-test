@@ -48,11 +48,12 @@ router.post('/login', (req, res) => {
                                             if(err) throw err;
                                             //Creo el usuario a devolver sin el password
                                             //El password nunca debe ir al front end!!
-                                            const userToReturn = new User({
+                                            const userToReturn = {
                                                 firstname: user.firstname,
                                                 lastname: user.lastname,
-                                                email: user.email
-                                            });
+                                                email: user.email,
+                                                role: user.role
+                                            };
                                             //Devuelvo mi jwt token con la info del usuario en 
                                             //caso de necesitarla
                                             res.json({ 

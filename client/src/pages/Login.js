@@ -36,6 +36,7 @@ class Login extends Component{
             this.props.signInUser(this.state.email, this.state.password).then(() => {
                 this.props.formLoading(false);
                 const { hasErrors } = this.props.utilsReducer;
+                console.log("PROPS => ", this.props);
                 if(!hasErrors){
                     this.props.history.push('/dashboard');
                 }                
@@ -49,8 +50,18 @@ class Login extends Component{
         this.props.hideError();
     }
 
-    responseGoogle = response => {
-        console.log(response);
+    responseGoogle = response => { 
+        const googleUser = response;
+        if(googleUser){
+            let googleUserData = {
+                googleId: googleUser.profileObj.googleId,
+                imageUrl: googleUser.profileObj.imageUrl,
+                email: googleUser.profileObj.email,
+                firstname: googleUser.profileObj.givenName,
+                lastname: googleUser.profileObj.familyName
+            }     
+            console.log(googleUserData);       
+        }
     }
 
     render(){

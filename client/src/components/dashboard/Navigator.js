@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 
 class Navigator extends Component {
-    
+    componentDidMount(){
+        console.log("Dashboard => ", this.props);
+    }
     render(){
         return(
             <div>
@@ -11,4 +14,12 @@ class Navigator extends Component {
     }
 }
 
-export default Navigator;
+function mapStateToProps(state) {
+    return { 
+        userReducer: state.userReducer,
+        utilsReducer: state.utilsReducer
+    }
+}
+export default connect(
+    mapStateToProps 
+    )(Navigator);

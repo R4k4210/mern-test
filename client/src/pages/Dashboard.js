@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Navigator from '../components/dashboard/Navigator';
 
-const Dashboard = () => (
-    <Navigator />
-)
+class Dashboard extends Component {
+
+    render(){
+        return (
+            <Navigator />
+        )
+    }
+}
 
 export default Dashboard;
