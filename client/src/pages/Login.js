@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { signInUser, hideError } from '../redux/actions/user/userActions';
+import { signInUser, hideError, signInGoogleUser } from '../redux/actions/user/userActions';
 import { formLoading, hasErrors } from '../redux/actions/utils/utilsActions';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -20,6 +20,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Error from '../components/utils/Error';
 import { GoogleLogin } from 'react-google-login';
+import { gkeys } from '../config/gkeys';
 
 class Login extends Component{
     state = {};
@@ -36,7 +37,6 @@ class Login extends Component{
             this.props.signInUser(this.state.email, this.state.password).then(() => {
                 this.props.formLoading(false);
                 const { hasErrors } = this.props.utilsReducer;
-                console.log("PROPS => ", this.props);
                 if(!hasErrors){
                     this.props.history.push('/dashboard');
                 }                
@@ -53,16 +53,17 @@ class Login extends Component{
     responseGoogle = response => { 
         const googleUser = response;
         if(googleUser){
-            let googleUserData = {
-                googleId: googleUser.profileObj.googleId,
-                imageUrl: googleUser.profileObj.imageUrl,
-                email: googleUser.profileObj.email,
-                firstname: googleUser.profileObj.givenName,
-                lastname: googleUser.profileObj.familyName
-            }     
-            console.log(googleUserData);       
+            let tokenId = googleUser.tokenId;   
+            this.props.signInGoogleUser(tokenId).then(() => {
+                this.props.formLoading(false);
+                const { hasErrors } = this.props.utilsReducer;
+                if(!hasErrors){
+                    this.props.history.push('/dashboard');
+                } 
+            });
         }
     }
+
 
     render(){
 
@@ -131,12 +132,11 @@ class Login extends Component{
                                 </Button>
                                 <Box>
                                     <GoogleLogin 
-                                        clientId="1090157284353-qel1iuh2p71fruh4ogbcaqds1121dipn.apps.googleusercontent.com"
+                                        clientId={gkeys.clientID}
                                         onSuccess={this.responseGoogle}
                                         onFailure={this.responseGoogle}
                                         buttonText={'Login with Google'}
                                         cookiePolicy={'single_host_origin'}
-                                        isSignedIn={true}
                                         theme={'dark'}
                                         className={classes.google}
                                     />
@@ -175,12 +175,16 @@ Login.propTypes = {
 
 function mapStateToProps(state) {
     const { userReducer } = state;
-    const { errors } = userReducer; 
-    let message = {};  
+    const { errors } = userReducer;
+    let message = {};
     if(errors){
-        message = Object.values(errors.data.errors);
+        try{
+            message = Object.values(errors.data.errors);
+        }catch(e){
+            message = {}
+        }  
     }
-    
+
     return { 
         userReducer: state.userReducer,
         errorMessage: message,
@@ -194,6 +198,7 @@ export default connect(
         signInUser, 
         hideError, 
         formLoading, 
-        hasErrors 
+        hasErrors,
+        signInGoogleUser 
     })
     (withStyles(styles)(Login));

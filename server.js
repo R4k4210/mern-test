@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const users = require('./routes/api/users');
 const tokenValidation = require('./routes/api/token-validation');
+const googleLogin = require('./routes/api/google-user');
 const app = express();
 const path = require('path');
 
@@ -20,6 +21,7 @@ mongoose.connect(db,  {useUnifiedTopology: true, useNewUrlParser: true, useCreat
 // Use Routes
 app.use('/api/users', users);
 app.use('/api/token-validation', tokenValidation);
+app.use('/api/google-login', googleLogin);
 
 // Serve static assetts if in production
 if(process.env.NODE_ENV === 'production'){

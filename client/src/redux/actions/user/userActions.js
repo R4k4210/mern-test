@@ -8,6 +8,9 @@ import { FORM_LOADING, HAS_ERRORS } from '../utils/types';
     llamar de manera sincronica al Action que llamara al Reducer para que
     actualice el State
 */
+
+const emptyError = {};
+
 export const createUser = user => dispatch => {
     dispatch({
         type: FORM_LOADING,
@@ -27,7 +30,7 @@ export const createUser = user => dispatch => {
         .catch(error => {
             dispatch({
                 type: USER_ERRORS,
-                payload: error.response
+                payload: error.response || emptyError
             })
             dispatch({
                 type: HAS_ERRORS,
@@ -38,6 +41,11 @@ export const createUser = user => dispatch => {
 
 
 export const signInUser = (email, password) => dispatch => {
+    dispatch({
+        type: FORM_LOADING,
+        payload: true
+    });
+    
     return axios.post(`${api.user}/login`, {email, password})
         .then(response => {
             dispatch({
@@ -52,7 +60,7 @@ export const signInUser = (email, password) => dispatch => {
         .catch( error => {
             dispatch({
                 type: USER_ERRORS,
-                payload: error.response
+                payload: error.response || emptyError
             })
             dispatch({
                 type: HAS_ERRORS,
@@ -61,58 +69,41 @@ export const signInUser = (email, password) => dispatch => {
         });     
 }
 
-/*
-Esta es otra forma mas separada de tener una funciona que maneja la llamada por axios
-para luego llamar al Action.
-El Action creator es lo que le pasa al reducer el tipo por el cual actuar, tambien aca es donde se deben hacer
-las llamadas a los servicios para obtener la informacion. Por buena practica se devuelve un type y un payload.
+export const signInGoogleUser = (token) => dispatch => {
+    dispatch({
+        type: FORM_LOADING,
+        payload: true
+    });
 
-export const createUser = user => {
-    console.log("AXIOS CREATE USER => ", user);
-    return dispatch => {
-        return axios.post(`${api.user}/register`, user)
-            .then(response => {
-                console.log(response);
-                dispatch(createUserSuccess(response));
-            })    
-            .catch(err => console.log("createUser => error: ", err));        
-    }    
-}
-
-export const createUserSuccess = user => {
-    console.log("CREATE_USER => ", user);
-    return {
-        type: CREATE_USER,
-        payload: user
+    let config = {
+        headers: {
+            'Content-Type': 'application/json',
+            "x-auth-token": token,
+        }
     }
-}
 
-
-export const signInUser = (email, password) => {
-    console.log(email, password);
-    return dispatch => {
-        return axios.post(`${api.user}/login`, {email, password})
-            .then(response => {
-                console.log("signInUser => response: ", response);
-                dispatch(signInUserSuccess(response));
+    return axios.post(`${api.google}/glogin`, null, config)
+        .then(response => {
+            dispatch({
+                type: LOGIN_USER,
+                payload: response.data
             })
-            .catch(err => {
-                console.log("signInUser => error: ", err);
-                console.log("signInUser => error response: ", err.response);
-                return err;
-            });
-    }
+            dispatch({
+                type: HAS_ERRORS,
+                payload: false 
+            })
+        })
+        .catch(error => {
+            dispatch({
+                type: USER_ERRORS,
+                payload: error.response || emptyError
+            })
+            dispatch({
+                type: HAS_ERRORS,
+                payload: true 
+            })
+        });
 }
-
-export const signInUserSuccess = user => {
-    console.log("LOGIN_USER => ", user);
-    return {
-        type: LOGIN_USER,
-        payload: user
-    }
-}
-
-*/
 
 export const hideError = () => {
     return {

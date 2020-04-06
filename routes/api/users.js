@@ -5,7 +5,6 @@ const keys = require("../../config/keys");
 // Load input validation
 const validateLoginInput = require("../../validation/login");
 const validateRegisterInput = require("../../validation/register");
-// Item Model
 const User = require('../../models/User');
 // Bcrypt Validations
 const bcryptValidation = require('../../common-scripts/security-commons');

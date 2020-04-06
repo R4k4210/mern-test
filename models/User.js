@@ -25,6 +25,10 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    picture: {
+        type: String,
+        default: ''
+    },
     role: {
         type: String,
         enum: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_GROUP', 'ONE_PIECE'],

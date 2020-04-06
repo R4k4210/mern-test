@@ -34,7 +34,8 @@ const getUserWithEncryptedData = function(body){
                 firstname: body.firstname,
                 lastname: body.lastname,
                 email: body.email,
-                password: hash
+                password: hash,
+                picture: body.picture
             });
             resolve(user);
         })

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const keys = require("../config/keys");
 
-function auth(req, res, next){
+function authGoogleAccounts(req, res, next){
 
     const token = req.header('x-auth-token');
     //Check for token
@@ -31,4 +31,4 @@ function auth(req, res, next){
     }
 }
 
-module.exports = auth;
+module.exports = authGoogleAccounts;
