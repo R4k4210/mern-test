@@ -36,7 +36,10 @@ const styles = theme => ({
       marginTop: theme.spacing(0),
       marginBottom: theme.spacing(2),
       align: 'center',
-    }
+    },
+    title: {
+      flexGrow: 1,
+    },
 });
 
 export default styles;

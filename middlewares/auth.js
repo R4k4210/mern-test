@@ -4,6 +4,7 @@ const keys = require("../config/keys");
 function auth(req, res, next){
 
     const token = req.header('x-auth-token');
+
     //Check for token
     let errors = {};
     if(!token) {

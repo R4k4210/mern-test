@@ -13,9 +13,7 @@ export default function withAuth(ComponentToProtect) {
         };
 
         componentDidMount() {
-            console.log("Store get state => ", store.getState());
             const { userReducer } = store.getState();
-
             let token = "";
             if(userReducer.member){
                 token = userReducer.member.token;
@@ -30,7 +28,6 @@ export default function withAuth(ComponentToProtect) {
 
             axios.post(`${api.token}/checkToken`, null, config)
                 .then(response => {
-                    console.log("Authorized => ", response);
                     if(response.data.authorized){
                         this.setState({ loading: false, redirect: false });
                     }else{
