@@ -89,7 +89,7 @@ router.post('/login', (req, res) => {
 // @desc    Create new user
 // @access  Public
 router.post('/register', (req, res) => {
-    console.log("Register requested => ", req.body);
+
     const { errors, isValid } = validateRegisterInput(req.body);
     if (!isValid) {
         return res.status(422).json({

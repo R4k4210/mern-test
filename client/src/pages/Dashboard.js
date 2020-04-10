@@ -17,14 +17,16 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import { createMuiTheme } from '@material-ui/core/styles';
 import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Button from '@material-ui/core/Button';
+import { logOutUser } from '../redux/actions/user/userActions';
+import LoyaltyRoundedIcon from '@material-ui/icons/LoyaltyRounded';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 class Dashboard extends Component {
     
@@ -41,23 +43,26 @@ class Dashboard extends Component {
         this.setState({ open: false });
     };
 
-    handleListItemClick = (event) => {
-        console.log("Click", event);
-
-    }
-
-    renderIcon(index){
+    renderIcon(index) {
         switch(index) {
             case 0:
-                return <CollectionsBookmarkIcon/>;
+                return <DashboardIcon />;
             case 1:
-                return <InboxIcon />;
+                return <CollectionsBookmarkIcon/>;
             case 2:
-                return <MailIcon />;
+                return <LoyaltyRoundedIcon />;
+            case 3:
+                return <SettingsIcon />;
             default:
-                return <MailIcon />;
+                return null;
         }
     }
+
+    handleLogOut = () => {
+        this.props.history.push('/login');
+        this.props.logOutUser();
+    }
+
     render() {
         
         const theme = createMuiTheme();
@@ -90,11 +95,14 @@ class Dashboard extends Component {
                             className={classes.title} 
                             variant="h6" 
                             noWrap
-                            flex="auto"
+                            style={{"flex":"auto"}}
                         >
                             {this.state.section}
                         </Typography>
-                        <Button color="inherit">
+                        <Button 
+                            color="inherit"
+                            onClick={this.handleLogOut}
+                        >
                             <ExitToAppIcon/>
                             <Typography noWrap>
                                 Log Out
@@ -117,13 +125,11 @@ class Dashboard extends Component {
                 >
                     <div className={classes.toolbar}>
                         <IconButton onClick={this.handleDrawerClose}>
-                            
                             { theme.direction === "rtl" ? (
                                 <ChevronRightIcon />
                             ) : (
                                     <ChevronLeftIcon />
                             ) }
-                                
                         </IconButton>
                     </div>
                     <Divider />
@@ -135,15 +141,16 @@ class Dashboard extends Component {
                         />
                         <Box display={open ? ('block'):('none')}>
                         <Typography className={classes.avatarText}>
-                            {userReducer.member.user.firstname + " "} 
-       
-                            {userReducer.member.user.lastname}
+                            {
+                                userReducer.member.user.firstname + " " +
+                                userReducer.member.user.lastname
+                            } 
                         </Typography>
                         </Box>
                     </Box>
                     <Divider />
                     <List>
-                        {["Collections", "Tags", "Send email", "Drafts"].map((text, index) => (
+                        {["Dashboard", "Collections", "Tags", "Settings"].map((text, index) => (
                             <ListItem 
                                 button 
                                 key={text}
@@ -173,5 +180,5 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps, { logOutUser })(withStyles(styles)(Dashboard));
 

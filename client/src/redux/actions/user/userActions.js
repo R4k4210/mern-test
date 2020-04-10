@@ -111,11 +111,10 @@ export const hideError = () => {
     }
 }
 
-export const logoutUser = (user) => {
-    console.log("LOGOUT_USER => ", user);
+export const logOutUser = () => {
     return {
         type: LOGOUT_USER,
-        payload: "User logged out"
+        payload: true
     }
 }
 

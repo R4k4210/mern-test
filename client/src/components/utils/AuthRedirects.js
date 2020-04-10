@@ -47,7 +47,6 @@ export default function withAuth(ComponentToProtect) {
                 return null;
             }
             if (redirect) {
-                console.log("redirect to login");
                 return <Redirect to="/login" />;
             }
             return <ComponentToProtect {...this.props} />;

@@ -49,7 +49,6 @@ router.post('/glogin', (req, res) => {
                                     .then(user => {
                                         //Una vez creado el usuario, genero un token, como un usuario normal.
                                         console.log("Google Account Created => User => ", user);
-                                        //createTokenAndSendToClient(user); 
                                         const payload = {
                                             _id: user._id,
                                             email: user.email
@@ -68,8 +67,6 @@ router.post('/glogin', (req, res) => {
                                                 role: user.role,
                                                 picture: user.picture
                                             };
-                                            //Seteo el nuevo token
-                                            //res.setHeader('x-auth-token', newToken);
                                             //Devuelvo mi jwt token con la info del usuario
                                             res.status(200).json({ 
                                                 token: newToken, 
@@ -101,7 +98,6 @@ router.post('/glogin', (req, res) => {
                             };
                             //Seteo el nuevo header
                             req.headers['x-auth-token'] = newToken;
-                            console.log("despues => ", req.header('x-auth-token'));
                             //Devuelvo mi jwt token con la info del usuario 
                             res.status(200).json({ 
                                 token: newToken,
